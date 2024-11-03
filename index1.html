@@ -544,24 +544,24 @@ async function updateHistoryDisplay() {
 
     // Check if the user is logged in
     const userData = JSON.parse(localStorage.getItem('userData'));
-if (!userData) {
-    const loginMessage = document.createElement('p');
-    loginMessage.textContent = 'Login to view your history.';
-    loginMessage.classList.add('error'); // Add error class for styling
-    historyContainer.appendChild(loginMessage);
+    if (!userData) {
+        const loginMessage = document.createElement('p');
+        loginMessage.textContent = 'Login to view your history.';
+        loginMessage.classList.add('error'); // Add error class for styling
+        historyContainer.appendChild(loginMessage);
 
-    // Create a login button
-    const loginButton = document.createElement('button');
-    loginButton.textContent = 'Login';
-    loginButton.classList.add('button', 'login-button'); // Add the new class for styling
-    loginButton.addEventListener('click', () => {
-        window.location.href = 'index.html'; // Redirect to login page
-    });
-    historyContainer.appendChild(loginButton);
+        // Create a login button
+        const loginButton = document.createElement('button');
+        loginButton.textContent = 'Login';
+        loginButton.classList.add('button', 'login-button'); // Add the new class for styling
+        loginButton.addEventListener('click', () => {
+            window.location.href = 'index.html'; // Redirect to login page
+        });
+        historyContainer.appendChild(loginButton);
 
-    loadingIndicator.style.display = 'none'; // Hide loading indicator
-    return; // Exit the function since the user is not logged in
-}
+        loadingIndicator.style.display = 'none'; // Hide loading indicator
+        return; // Exit the function since the user is not logged in
+    }
 
     try {
         const { data, error } = await supabase
@@ -578,7 +578,7 @@ if (!userData) {
             historyContainer.appendChild(noHistoryMessage);
         } else {
             // Load images into the history container
-            data.forEach((imageData) => {
+            data.forEach((imageData ) => {
                 const imageElement = document.createElement('img');
                 imageElement.src = imageData.url;
                 imageElement.alt = "Generated Image";
@@ -590,6 +590,21 @@ if (!userData) {
                 const promptElement = document.createElement('p');
                 promptElement.textContent = `Prompt: ${imageData.prompt}`;
                 historyContainer.appendChild(promptElement);
+
+                // Add copy button for each image in history
+                const copyButton = document.createElement('button');
+                copyButton.textContent = 'Copy prompt';
+                copyButton.addEventListener('click', () => {
+                    // Copy the promo code to the clipboard
+                    navigator.clipboard.writeText(imageData.prompt) // Assuming the promo code is stored in prompt
+                        .then(() => {
+                            alert('Text copied to clipboard!');
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy: ', err);
+                        });
+                });
+                historyContainer.appendChild(copyButton);
 
                 // Add download button for each image in history
                 const downloadButton = document.createElement('button');
