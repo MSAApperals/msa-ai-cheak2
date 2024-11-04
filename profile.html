@@ -156,8 +156,8 @@ document.getElementById('logoutButton').addEventListener('click', function () {
         header .home-button {
             margin-right: 20px;
             padding: 8px 16px;
-            background-color: #007bff;
-            color: white;
+            background-color: #ccc;
+            color: rgb(0, 0, 0);
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -165,7 +165,8 @@ document.getElementById('logoutButton').addEventListener('click', function () {
         }
 
         header .home-button:hover {
-            background-color: #0056b3;
+            background-color: #8c8d8d;
+            box-shadow: 2px 4px 0px #000;
         }
 
         /* Profile Container */
@@ -209,6 +210,7 @@ document.getElementById('logoutButton').addEventListener('click', function () {
 
         #profilePic:hover {
             transform: scale(1.1);
+            box-shadow: 2px 4px 0px #000;
         }
 
         .camera-icon {
@@ -234,6 +236,7 @@ document.getElementById('logoutButton').addEventListener('click', function () {
 
         .camera-icon button:hover {
             background-color: #0056b3;
+            box-shadow: 2px 4px 0px #000;
         }
 
         .camera-icon button img {
@@ -263,6 +266,7 @@ document.getElementById('logoutButton').addEventListener('click', function () {
 
         .profileButton:hover {
             background: #0056b3;
+            box-shadow: 2px 4px 0px #000;
         }
 
         #editNameInput {
@@ -278,9 +282,12 @@ document.getElementById('logoutButton').addEventListener('click', function () {
         /* Logout Button */
         #logoutButton {
             margin-top: 15px;
-            background: #dc3545;
+            background: #d12525;
         }
-
+         #logoutButton:hover {
+            background: red;
+            box-shadow: 2px 4px 0px #000;
+         }
         /* Responsive Styling */
         @media (max-width: 600px) {
             header h1 {
