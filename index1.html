@@ -34,8 +34,8 @@
         }
      /* Header Styles */
      .button {
-            background-color: #ff61a6;
-            color: white;
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
             box-shadow: 0px 2px 3px;
             padding: 10px;
             border-radius: 8px;
@@ -151,11 +151,11 @@
             justify-content: center;
             align-items: center;
             background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 8px 30px #ececec;
-            width: 90%;
-            max-width: 400px;
+            width: 80%;
+            max-width: 360px;
             top: 10vh; /* Moved closer to the top */
             position: relative; /* Ensure this applies */
             text-align: center;
@@ -163,6 +163,7 @@
             margin: 0 auto;
             overflow-y: auto;
             max-height: 80vh;
+            animation: slideIn 1s forwards;
         }
         /* Heading Styles */
         h1 {
@@ -173,7 +174,7 @@
         /* Textarea Styles */
         textarea {
             width: 100%;
-            height: 150px;
+            height: 140px;
             padding: 10px;
             border-radius: 8px;
             border: none;
@@ -185,7 +186,7 @@
         .model-selection-container {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             margin-top: 20px;
             opacity: 0; /* Start hidden */
             transform: translateY(50px); /* Start off-screen */
@@ -247,9 +248,12 @@
         }
 
         button:hover {
-            background-color: #483ea1;
+            background-color: #ff61a6;
+            box-shadow: 2px 5px 0px  #222;
         }
-
+     textarea:hover{
+        box-shadow: 2px 7px 0px  #222;
+     }
 
         /* Error Message Styles */
         .error {
@@ -281,8 +285,8 @@
         /* Download and View Button Styles */
         #downloadButton, #viewButton, #homebutton{
             display: none; /* Initially hidden */
-            background-color: #ff61a6;
-            color: white;
+            background-color: #f8f8f8;
+            color: rgb(0, 0, 0);
             padding: 10px;
             border-radius: 8px;
             cursor: pointer;
@@ -294,6 +298,7 @@
         }
         #viewButton:hover, #downloadButton:hover, #backButton:hover {
             background-color: #ff61d6;
+            box-shadow: 2px 5px 0px  #222;
         }
 
         /* Responsive Media Queries */
@@ -520,7 +525,7 @@ document.getElementById('generateButton').addEventListener('click', async () => 
 
     } catch (error) {
         console.error('Error:', error);
-        errorMessage.textContent = 'Error generating image. Please try again.';
+        errorMessage.textContent = 'Error generating image.cheak your internet connection and try again';
     } finally {
         loadingOverlay.style.visibility = 'hidden'; // Hide loading overlay
         document.body.style.filter = 'none';
