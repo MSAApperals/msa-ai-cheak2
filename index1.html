@@ -32,9 +32,8 @@
                 background-position: 0% 50%;
             }
         }
-
-        /* Header Styles */
-        .button {
+     /* Header Styles */
+     .button {
             background-color: #ff61a6;
             color: white;
             box-shadow: 0px 2px 3px;
@@ -46,6 +45,84 @@
             position: fixed;
             z-index: 100;
         }
+        #homeButton {
+            top: 10px;
+            left: 10px;
+        }
+        #historyButton {
+            top: 10px;
+            right: 40px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #222;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+            color: white;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .close {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #ff0000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* History Styles */
+        #historyContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            margin: 10px;
+            text-align: center;
+        }
+
+        .history-item img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .history-item img:hover {
+            transform: scale(1.1);
+        }       /* Header Styles */
+       
         #homeButton {
             top: 10px;
             z-index: 10000;
@@ -63,7 +140,7 @@
     padding: 10px 20px;
     position: relative; /* Smaller padding */
     width: 180px;
-    top: 20px; /* Decrease width */
+    top: 8px; /* Decrease width */
     margin: 10px auto; /* Center the button */
     display: block; /* Make it a block element */
 }
@@ -115,23 +192,7 @@
             animation: slideIn 1s forwards; /* Slide in animation */
         }
 
-        .model-button {
-            background-color: white;
-            color: rgb(14, 13, 13);
-            border-radius: 2px ;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            transition: transform 0.3s ease, background-color 0.3s ease;
-        }
-
-        /* Hover effect for model buttons */
-        .model-button:hover {
-            background-color: #ff 61d6;
-            transform: scale(1.1);
-        }
+      
 
         /* Slide-in animation for model selection */
         @keyframes slideIn {
@@ -189,15 +250,6 @@
             background-color: #483ea1;
         }
 
-        /* Image Styles */
-        img {
-            width: 100%;
-            border-radius: 8px;
-            margin-top: 10px;
-            display: none;
-            opacity: 0;
-            transition: opacity 1s ease-in;
-        }
 
         /* Error Message Styles */
         .error {
@@ -307,6 +359,14 @@
             text-decoration: none;
             cursor: pointer;
         }
+         /* Generated Image Styles */
+         #outputImage {
+            display: none; /* Hide initially */
+            width: 300px; /* Adjust the width */
+            height: 300px; /* Adjust the height */
+            border-radius: 8px;
+            margin: 20px;
+        }
     </style>
 </head>
 <body>
@@ -355,7 +415,7 @@
     <div id="imageModal" class="modal">
         <div class="modal-content">
             <span id="closeModal" class="close">&times;</span>
-            <img id="modalImage" src="" alt="Modal Image" style="width: 100%; border-radius: 8px;">
+            <img id="modalImage" src="" alt="ModalImage" style="width: 100%; border-radius: 8px;">
         </div>
     </div>
 
@@ -428,30 +488,35 @@ document.getElementById('generateButton').addEventListener('click', async () => 
         outputImage.src = imageUrl;
         outputImage.style.display = 'block';
         outputImage.style.opacity = '1';
-        outputImage.onload = () => {
-            outputImage.style.transition = 'opacity 1s ease-in';
+
+        // Convert blob to base64
+        const reader = new FileReader();
+        reader.readAsDataURL(imageBlob);
+        reader.onloadend = async () => {
+            const base64data = reader.result; // This is the base64 string
+
+            // Save image data to Supabase
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const { data, error } = await supabase
+                .from('image_history')
+                .insert([
+                    { email: userData.email, image_data: base64data, prompt: inputText }, // Save base64 data
+                ]);
+
+            if (error) throw error;
+
+            // Hide model selection and input elements after generation
+            document.getElementById('modelSelection').style.display = 'none';
+            textarea.style.display = 'none';
+            document.getElementById('generateButton').style.display = 'none';
+
+            title.innerText = 'Your Image';
+            document.body.style.filter = 'none';
+            downloadButton.style.display = 'block';
+            viewButton.style.display = 'block';
+            backButton.style.display = 'block';
+
         };
-
-        // Save image data to Supabase
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        const { data, error } = await supabase
-            .from('image_history')
-            .insert([
-                { email: userData.email, url: imageUrl, prompt: inputText },
-            ]);
-
-        if (error) throw error;
-
-        // Hide model selection and input elements after generation
-        document.getElementById('modelSelection').style.display = 'none';
-        textarea.style.display = 'none';
-        document.getElementById('generateButton').style.display = 'none';
-
-        title.innerText = 'Your Image';
-        document.body.style.filter = 'none';
-        downloadButton.style.display = 'block';
-        viewButton.style.display = 'block';
-        backButton.style.display = 'block';
 
     } catch (error) {
         console.error('Error:', error);
@@ -538,30 +603,29 @@ async function updateHistoryDisplay() {
     const historyContainer = document.getElementById('historyContainer');
     historyContainer.innerHTML = ''; // Clear previous history
 
-    // Show loading indicator while checking history
     const loadingIndicator = document.getElementById('loadingHistoryIndicator');
     loadingIndicator.style.display = 'block';
 
-    // Check if the user is logged in
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (!userData) {
-        const loginMessage = document.createElement('p');
-        loginMessage.textContent = 'Login to view your history.';
-        loginMessage.classList.add('error'); // Add error class for styling
-        historyContainer.appendChild(loginMessage);
+    const loginMessage = document.createElement('p');
+    loginMessage.textContent = 'Login to view your history.';
+    loginMessage.classList.add('error');
+    historyContainer.appendChild(loginMessage);
 
-        // Create a login button
-        const loginButton = document.createElement('button');
-        loginButton.textContent = 'Login';
-        loginButton.classList.add('button', 'login-button'); // Add the new class for styling
-        loginButton.addEventListener('click', () => {
-            window.location.href = 'index.html'; // Redirect to login page
-        });
-        historyContainer.appendChild(loginButton);
+    // Create a login button
+    const loginButton = document.createElement('button');
+    loginButton.textContent = 'Login';
+    loginButton.classList.add('login-button');
+    loginButton.addEventListener('click', () => {
+        // Redirect to login page or perform login action
+        window.location.href = 'index.html'; // Change this to your login page
+    });
+    historyContainer.appendChild(loginButton);
 
-        loadingIndicator.style.display = 'none'; // Hide loading indicator
-        return; // Exit the function since the user is not logged in
-    }
+    loadingIndicator.style.display = 'none';
+    return;
+}
 
     try {
         const { data, error } = await supabase
@@ -571,59 +635,53 @@ async function updateHistoryDisplay() {
 
         if (error) throw error;
 
-        // Check if there are any images in history
         if (data.length === 0) {
             const noHistoryMessage = document.createElement('p');
             noHistoryMessage.textContent = 'No history available.';
             historyContainer.appendChild(noHistoryMessage);
         } else {
-            // Load images into the history container
-            data.forEach((imageData ) => {
+            data.forEach((imageData) => {
+                // Create an image element
                 const imageElement = document.createElement('img');
-                imageElement.src = imageData.url;
+                imageElement.src = imageData.image_data; // Use base64 data
                 imageElement.alt = "Generated Image";
                 imageElement.style.width = '100px';
                 imageElement.style.height = '100px';
                 imageElement.style.margin = '10px';
                 historyContainer.appendChild(imageElement);
 
+                // Create a prompt element
                 const promptElement = document.createElement('p');
                 promptElement.textContent = `Prompt: ${imageData.prompt}`;
                 historyContainer.appendChild(promptElement);
 
-                // Add copy button for each image in history
+                // Add copy button
                 const copyButton = document.createElement('button');
                 copyButton.textContent = 'Copy prompt';
                 copyButton.addEventListener('click', () => {
-                    // Copy the promo code to the clipboard
-                    navigator.clipboard.writeText(imageData.prompt) // Assuming the promo code is stored in prompt
-                        .then(() => {
-                            alert('Text copied to clipboard!');
-                        })
-                        .catch(err => {
-                            console.error('Failed to copy: ', err);
-                        });
+                    navigator.clipboard.writeText(imageData.prompt)
+                        .then(() => alert('Text copied to clipboard!'))
+                        .catch(err => console.error('Failed to copy: ', err));
                 });
                 historyContainer.appendChild(copyButton);
 
-                // Add download button for each image in history
+                // Add download button
                 const downloadButton = document.createElement('button');
                 downloadButton.textContent = 'Download';
                 downloadButton.addEventListener('click', () => {
                     const link = document.createElement('a');
-                    link.href = imageData.url;
-                    link.download = `image-${imageData.id}.jpg`; // Set default file name
+                    link.href = imageData.image_data;
+                    link.download = `image-${imageData.id}.jpg`;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                 });
                 historyContainer.appendChild(downloadButton);
 
-                // Add delete button for each image in history
+                // Add delete button
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
                 deleteButton.addEventListener('click', async () => {
-                    // Remove the image from Supabase
                     const { error } = await supabase
                         .from('image_history')
                         .delete()
@@ -631,8 +689,7 @@ async function updateHistoryDisplay() {
 
                     if (error) throw error;
 
-                    // Refresh the history display
-                    updateHistoryDisplay();
+                    updateHistoryDisplay(); // Refresh the history display
                 });
                 historyContainer.appendChild(deleteButton);
             });
